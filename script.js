@@ -1,8 +1,10 @@
 let arquivo = [];
 
-if(arquivo !== [] ){
-       arquivo = JSON.parse(localStorage.getItem('listagem'));
+if(JSON.parse(localStorage.getItem('listagem'))!== ''){
+    arquivo = JSON.parse(localStorage.getItem('listagem'))
 }
+
+
 
 const inputEle = document.getElementById('codigo');
 inputEle.addEventListener('keyup', function(cod)
@@ -25,7 +27,7 @@ inputqnt.addEventListener('keyup', function(qnt)
 
 function add(){
 
-    codigo.value;
+codigo.value;
 quant.value;
 arquivo.push(`${codigo.value};${quant.value}`)
 console.log(arquivo)
@@ -52,6 +54,7 @@ function zerar(){
     let zerando = [];
     localStorage.setItem('listagem', JSON.stringify(zerando)); 
     arquivo = zerando;
+    listar();
 }
 
 
