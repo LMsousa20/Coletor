@@ -1,3 +1,5 @@
+
+
 let arquivo = JSON.parse(localStorage.getItem("listagem"));
 
 const inputEle = document.getElementById("codigo");
@@ -36,7 +38,7 @@ function listar() {
   document.getElementById("list-div").innerHTML = "";
   for (let id = 0; id < lista.length; id++) {
     document.getElementById("resultado").innerHTML += `
-        <span>${lista[id]}</span><br>
+        ${lista[id]}
 `;
   }
   lista.forEach((listItem, i) => {
@@ -69,3 +71,16 @@ function zerar() {
   arquivo = zerando;
   listar();
 }
+
+function mensagem(){
+    let cont = document.getElementById("resultado").textContent
+    let texto = cont;
+    let titulo = "Rl - Coletor"
+  
+    let blob = new Blob([texto],
+        {
+            type:"text/plain;charset=utf-8"
+        });
+  
+        saveAs(blob, titulo + ".txt")
+  }
