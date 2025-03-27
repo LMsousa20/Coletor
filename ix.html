@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="FileSaver.js"></script>
+    
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container ">
+                <h1 class="display-4">COLETOR</h1>
+                <p class="lead">
+                    Esse coletor foi desenvolvido pelo Lucas Monteiro - RL soluções,
+                    pra ajudar na contagem de estoque do Sistema ACS Sintese. </p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalExemplo">
+                    Ajudar?
+                </button>
+                <button type="button" class="btn btn-danger" onclick="zerar()">
+                    Zera Lista
+                </button>
+                <button class="btn btn-primary" onclick="listar()">Listar</button>
+            </div>
+        </div>
+    </header>
+    <section>
+        <div class="container d-flex flex-column border p">
+
+            <div class="input-group mb-3">
+                <input type="text" id='codigo' class="form-control" placeholder="Codigo de barras / GTIN"
+                    aria-label="Codigo de barras / GTIN" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <span class="input-group-text">Cod de Barras</span>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <input type="number" min="0" maxlength="8" id="quant" class="form-control" placeholder="QUANTIDADE"
+                    aria-label="Recipiente para nickname" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" onclick="add()">ADD+</button>
+
+                </div>
+            </div>
+            
+
+        </div>
+
+    </section>
+
+    <div class="container d-flex border mt-5">
+
+
+        <div id="list-div" >
+           
+          
+        </div>
+
+    </div>
+    <!-- Abaixo e o codigo invisivel -->
+    <div class="container  border mt-5" id="resultado" cols="30" rows="10"></div>
+    <button class="btn btn-primary" onclick="mensagem()">Exportar</button>
+    
+</div>
+    
+
+    <div class="modal fade" id="modalExemplo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ajuda</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Apos a leitura da saldo de todos os protudos,
+                    copia-se o codigo abaixo, cola em um bloco
+                    de nota e salva no formato txt e importa o arquivo no sistema.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group-append">
+       
+
+    </div>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
