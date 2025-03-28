@@ -101,6 +101,15 @@
             margin-top: 2rem;
             box-shadow: 0 -0.15rem 0.5rem 0 rgba(0,0,0,.05);
         }
+
+        video{
+            max-width: 80vw;
+
+        }
+
+        .drawingBuffer{
+            display: none;
+        }
         
         @media (max-width: 768px) {
             .display-4 {
@@ -124,7 +133,7 @@
                         <i class="fas fa-question-circle me-1"></i> Ajuda
                     </button>
                     <button class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#modalLeitor" >
-                        <i class="fas fa-question-circle me-1"></i> Leitor
+                        <i class="fa fa-barcode me-1"></i> Leitor
                     </button>
                     <button class="btn btn-outline-light me-2" onclick="zerar()">
                         <i class="fas fa-eraser me-1"></i> Zerar
@@ -241,7 +250,7 @@
                     <div id="barcode-scanner"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary-custom" data-bs-dismiss="modal">*</button>
+                    <button type="button" class="btn-close btn btn-primary-custom" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             </div>
         </div>
@@ -257,60 +266,90 @@
      <script src="script.js"></script>
 
      <script>
-
-function beep(frequency = 440, duration = 200) {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-
-    oscillator.type = "sine"; // Tipo do som (senoidal)
-    oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime); // Frequência em Hz
-    gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    oscillator.start();
-    setTimeout(() => {
-        oscillator.stop();
-        audioCtx.close();
-    }, duration);
-}
-
-// Chamando a função para tocar o bip
-beep(1000, 300); // Frequência de 1000 Hz por 300 ms
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Iniciou');
         
-            console.log('iniciou')
-        document.addEventListener('DOMContentLoaded', function() {
-        Quagga.init({
-            inputStream: {
-                name: "Live",
-                type: "LiveStream",
-                target: document.querySelector('#barcode-scanner') // Elemento HTML onde o vídeo será exibido
-            },
-            decoder: {
-                readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader"] // Tipos de códigos de barras que serão lidos
+            // Função para emitir um bip sonoro
+            function beep(frequency = 440, duration = 200) {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+        
+                oscillator.type = "sine";
+                oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+        
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+        
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                    audioCtx.close();
+                }, duration);
             }
-        }, function(err) {
-            if (err) {
-                console.error(err);
-                return;
+        
+            // Função para validar EAN-13
+            function validarEAN13(codigo) {
+                if (!/^\d{13}$/.test(codigo)) return false;
+        
+                let soma = 0;
+                for (let i = 0; i < 12; i++) {
+                    soma += parseInt(codigo[i]) * (i % 2 === 0 ? 1 : 3);
+                }
+                let digitoVerificador = (10 - (soma % 10)) % 10;
+        
+                return digitoVerificador === parseInt(codigo[12]);
             }
-            console.log("QuaggaJS inicializado com sucesso.");
-            Quagga.start();
+        
+            // Função para validar EAN-8
+            function validarEAN8(codigo) {
+                if (!/^\d{8}$/.test(codigo)) return false;
+        
+                let soma = 0;
+                for (let i = 0; i < 7; i++) {
+                    soma += parseInt(codigo[i]) * (i % 2 === 0 ? 3 : 1);
+                }
+                let digitoVerificador = (10 - (soma % 10)) % 10;
+        
+                return digitoVerificador === parseInt(codigo[7]);
+            }
+        
+            // Inicializando QuaggaJS
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#barcode-scanner')
+                },
+                decoder: {
+                    readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader"]
+                }
+            }, function (err) {
+                if (err) {
+                    console.error("Erro ao iniciar QuaggaJS:", err);
+                    return;
+                }
+                console.log("QuaggaJS inicializado com sucesso.");
+                Quagga.start();
+            });
+        
+            // Evento de detecção de código de barras
+            Quagga.onDetected(function (result) {
+                const code = result.codeResult.code;
+                const isEAN13 = validarEAN13(code);
+                const isEAN8 = validarEAN8(code);
+        
+                if (isEAN13 || isEAN8) {
+                    console.log("Código de barras detectado:", code);
+                    document.getElementById('codigo').value = code;
+                    beep(1000, 300); // Emite um bip para indicar leitura bem-sucedida
+                } else {
+                    console.warn("Código inválido:", code);
+                }
+            });
         });
-    
-        Quagga.onDetected(function(result) {
-            var code = result.codeResult.code;
-            console.log("Código de barras detectado: " + code);
-            // alert("Código de barras detectado: " + code);
-            document.getElementById('codigo').value = `${code}`
-            beep()
-        });
-    });
-
-
-
-    </script>
+        </script>
+        
 </body>
 </html>

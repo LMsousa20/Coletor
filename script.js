@@ -1,86 +1,104 @@
+// Recupera os dados do localStorage ou inicializa caso não existam
+let arquivo = JSON.parse(localStorage.getItem("listagem")) || [];
+let arquivoObj = JSON.parse(localStorage.getItem("listagemObj")) || [];
 
+// Salva os valores padronizados no localStorage caso ainda não existam
+localStorage.setItem("listagem", JSON.stringify(arquivo));
+localStorage.setItem("listagemObj", JSON.stringify(arquivoObj));
 
-let arquivo = JSON.parse(localStorage.getItem("listagem"));
+// Captura elementos de input
+const inputCodigo = document.getElementById("codigo");
+const inputQuant = document.getElementById("quant");
+const resultadoDiv = document.getElementById("resultado");
+const listDiv = document.getElementById("list-div");
 
-const inputEle = document.getElementById("codigo");
-inputEle.addEventListener("keyup", function (cod) {
-  console.log(cod);
-  if (cod.key === "Enter") {
-    document.getElementById("quant").focus();
-  }
+// Eventos para navegação no formulário
+inputCodigo.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+        inputQuant.focus();
+    }
 });
 
-const inputqnt = document.getElementById("quant");
-inputqnt.addEventListener("keyup", function (qnt) {
-  console.log(qnt);
-  if (qnt.key === "Enter") {
-    add();
-    document.getElementById("codigo").focus();
-  }
+inputQuant.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+        add();
+        inputCodigo.focus();
+    }
 });
 
+// Função para adicionar itens à lista
 function add() {
-  codigo.value;
-  quant.value;
-  arquivo.push(`${codigo.value};${quant.value}`);
-  console.log(arquivo);
-  codigo.value = "";
-  quant.value = "";
-  localStorage.setItem("listagem", JSON.stringify(arquivo));
-  listar();
+    const codigo = inputCodigo.value.trim();
+    const quantidade = inputQuant.value.trim();
+
+    if (codigo && quantidade) {
+        arquivo.push(`${codigo};${quantidade}`);
+        arquivoObj.push({ Cod_barra: codigo, Quantidade: quantidade });
+
+        // Atualiza o localStorage
+        localStorage.setItem("listagem", JSON.stringify(arquivo));
+        localStorage.setItem("listagemObj", JSON.stringify(arquivoObj));
+
+        // Limpa os campos e atualiza a listagem
+        inputCodigo.value = "";
+        inputQuant.value = "";
+        listar();
+    }
 }
 
+// Função para listar os itens
 function listar() {
-  let lista = JSON.parse(localStorage.getItem("listagem"));
-  console.log(typeof lista);
-  console.log(lista);
-  resultado.innerHTML = "";
-  document.getElementById("list-div").innerHTML = "";
-  for (let id = 0; id < lista.length; id++) {
-    document.getElementById("resultado").innerHTML += `
-        ${lista[id]}
-`;
-  }
-  lista.forEach((listItem, i) => {
-    document.getElementById("list-div").innerHTML += `
-        <div class="input-group pd-3 ">
-        <input type="number" class="form-control" placeholder="${listItem}" disabled id="1">
-        <div class="input-group-append">
-            <button class="btn btn-danger" onclick="remove('${listItem}')">remove</button>
+    const lista = JSON.parse(localStorage.getItem("listagem")) || [];
+    resultadoDiv.innerHTML = lista.join("<br>");
 
-        </div>
-    </div>`;
-  });
+    listDiv.innerHTML = lista
+        .map(
+            (item, i) => `
+        <div class="input-group pd-3">
+            <input type="text" class="form-control" value="${item}" disabled>
+            <div class="input-group-append">
+                <button class="btn btn-danger" onclick="remove(${i})">Remover</button>
+            </div>
+        </div>`
+        )
+        .join("");
 }
 
-function remove(item) {
-  let lista = JSON.parse(localStorage.getItem("listagem"));
-  var myIndex = lista.indexOf(item);
-  if (myIndex !== -1) {
-    lista.splice(myIndex, 1);
-  }
-  console.log(lista);
-  localStorage.setItem("listagem", JSON.stringify(lista));
-  arquivo = lista;
-  listar();
+// Função para remover um item da lista
+function remove(index) {
+    arquivo.splice(index, 1);
+    arquivoObj.splice(index, 1);
+
+    // Atualiza o localStorage
+    localStorage.setItem("listagem", JSON.stringify(arquivo));
+    localStorage.setItem("listagemObj", JSON.stringify(arquivoObj));
+
+    listar();
 }
 
+// Função para zerar a lista
 function zerar() {
-  let zerando = [];
-  localStorage.setItem("listagem", JSON.stringify(zerando));
-  arquivo = zerando;
-  listar();
+    arquivo = [];
+    arquivoObj = [];
+
+    localStorage.setItem("listagem", JSON.stringify(arquivo));
+    localStorage.setItem("listagemObj", JSON.stringify(arquivoObj));
+
+    listar();
 }
 
-function mensagem(){
-    let cont = document.getElementById("resultado").textContent
-    let texto = cont;
-    let titulo = "Rl - Coletor"
-  
-    let blob = new Blob([texto],
-        {
-            type:"text/plain;charset=utf-8"
-        });
-  
-        saveAs(blob, titulo + ".txt")
-  }
+// Função para exportar os dados para um arquivo .txt
+function mensagem() {
+  let texto = "";
+  let memory = JSON.parse(localStorage.getItem("listagem")) || [];
+  memory.forEach(reg => {
+      texto += `${reg}\n`; // Correção da concatenação
+  });
+  console.log(texto.trim()); // Exibe no console sem espaços extras
+  let titulo = "Rl - Coletor";
+  let blob = new Blob([texto.trim()], { type: "text/plain;charset=utf-8" });
+  saveAs(blob, `${titulo}.txt`);
+}
+
+// Inicializa a listagem ao carregar a página
+listar();
